@@ -1,8 +1,6 @@
 {
-  "ApprovalUrl": "https://openapi.koreainvestment.com:9443/oauth2/Approval",
   "AccessTokenUrl": "https://openapi.koreainvestment.com:9443/oauth2/tokenP",
   "PriceDetailUrl": "https://openapi.koreainvestment.com:9443/uapi/overseas-price/v1/quotations/price-detail",
-  "WebSocketUrl": "ws://ops.koreainvestment.com:21000/tryitout",
   "AppKey": "",
   "AppSecret": "",
   "ExchangeCode": "BAQ",
@@ -24,7 +22,5 @@
       "RegularExchangeCode": "NAS",
       "ManualExchangeCode": "BAQ"
     }
-  ],
-  "TrId": "HDFSCNT0",
-  "TrKey": "BAQNVDA"
+  ]
 }

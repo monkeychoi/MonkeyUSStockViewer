@@ -2,13 +2,9 @@ namespace MonkeyUSStockViewer.Models;
 
 public sealed class KisSettings
 {
-    public string ApprovalUrl { get; set; } = "https://openapi.koreainvestment.com:9443/oauth2/Approval";
-
     public string AccessTokenUrl { get; set; } = "https://openapi.koreainvestment.com:9443/oauth2/tokenP";
 
     public string PriceDetailUrl { get; set; } = "https://openapi.koreainvestment.com:9443/uapi/overseas-price/v1/quotations/price-detail";
-
-    public string WebSocketUrl { get; set; } = "ws://ops.koreainvestment.com:21000/tryitout";
 
     public string AppKey { get; set; } = string.Empty;
 
@@ -36,8 +32,4 @@ public sealed class KisSettings
     {
         new KisStockSetting()
     };
-
-    public string TrId { get; set; } = "HDFSCNT0";
-
-    public string TrKey { get; set; } = "BAQNVDA";
 }

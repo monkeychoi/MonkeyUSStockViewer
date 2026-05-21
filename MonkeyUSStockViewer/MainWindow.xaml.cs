@@ -369,10 +369,8 @@ namespace MonkeyUSStockViewer
 
             return new KisSettings
             {
-                ApprovalUrl = _settings.ApprovalUrl,
                 AccessTokenUrl = AccessTokenUrlTextBox.Text.Trim(),
                 PriceDetailUrl = PriceDetailUrlTextBox.Text.Trim(),
-                WebSocketUrl = _settings.WebSocketUrl,
                 AppKey = AppKeyTextBox.Text.Trim(),
                 AppSecret = AppSecretPasswordBox.Password.Trim(),
                 ExchangeCode = exchangeCode,
@@ -384,9 +382,7 @@ namespace MonkeyUSStockViewer
                 TickerWindowTop = _settings.TickerWindowTop,
                 TickerWindowWidth = _settings.TickerWindowWidth,
                 TickerWindowHeight = _settings.TickerWindowHeight,
-                Stocks = _stocks.Select(CloneStock).ToList(),
-                TrId = _settings.TrId,
-                TrKey = _settings.TrKey
+                Stocks = _stocks.Select(CloneStock).ToList()
             };
         }
 
