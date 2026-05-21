@@ -1,0 +1,9 @@
+.vs/
+bin/
+obj/
+
+# Local KIS credentials
+kis_settings.json
+**/kis_settings.json
+kis_token_cache.json
+**/kis_token_cache.json

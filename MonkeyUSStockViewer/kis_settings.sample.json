@@ -1,0 +1,30 @@
+{
+  "ApprovalUrl": "https://openapi.koreainvestment.com:9443/oauth2/Approval",
+  "AccessTokenUrl": "https://openapi.koreainvestment.com:9443/oauth2/tokenP",
+  "PriceDetailUrl": "https://openapi.koreainvestment.com:9443/uapi/overseas-price/v1/quotations/price-detail",
+  "WebSocketUrl": "ws://ops.koreainvestment.com:21000/tryitout",
+  "AppKey": "",
+  "AppSecret": "",
+  "ExchangeCode": "BAQ",
+  "Symbol": "NVDA",
+  "PollingIntervalSeconds": 2,
+  "TickerFontSize": 13,
+  "AlwaysOnTop": true,
+  "TickerWindowLeft": 100,
+  "TickerWindowTop": 100,
+  "TickerWindowWidth": 280,
+  "TickerWindowHeight": 180,
+  "Stocks": [
+    {
+      "DisplayName": "NVIDIA",
+      "Symbol": "NVDA",
+      "Market": "NASDAQ",
+      "ExchangeMode": "Day",
+      "DayExchangeCode": "BAQ",
+      "RegularExchangeCode": "NAS",
+      "ManualExchangeCode": "BAQ"
+    }
+  ],
+  "TrId": "HDFSCNT0",
+  "TrKey": "BAQNVDA"
+}
