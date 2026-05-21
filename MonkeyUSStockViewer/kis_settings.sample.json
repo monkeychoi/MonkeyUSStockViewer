@@ -17,10 +17,12 @@
       "DisplayName": "NVIDIA",
       "Symbol": "NVDA",
       "Market": "NASDAQ",
-      "ExchangeMode": "Day",
+      "ExchangeMode": "Auto",
       "DayExchangeCode": "BAQ",
       "RegularExchangeCode": "NAS",
-      "ManualExchangeCode": "BAQ"
+      "ManualExchangeCode": "BAQ",
+      "HoldingQuantity": 0,
+      "AveragePrice": 0
     }
   ]
 }

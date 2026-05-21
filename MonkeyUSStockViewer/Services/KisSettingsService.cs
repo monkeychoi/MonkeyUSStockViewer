@@ -93,6 +93,8 @@ public sealed class KisSettingsService
             stock.DayExchangeCode = stock.DayExchangeCode.Trim().ToUpperInvariant();
             stock.RegularExchangeCode = stock.RegularExchangeCode.Trim().ToUpperInvariant();
             stock.ManualExchangeCode = stock.ManualExchangeCode.Trim().ToUpperInvariant();
+            stock.HoldingQuantity = Math.Max(0m, stock.HoldingQuantity);
+            stock.AveragePrice = Math.Max(0m, stock.AveragePrice);
         }
     }
 

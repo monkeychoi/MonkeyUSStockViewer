@@ -51,18 +51,20 @@ namespace MonkeyUSStockViewer
                     Currency = string.Empty,
                     Base = string.Empty,
                     ChangeRate = string.Empty,
+                    HoldingQuantity = stock.HoldingQuantity,
+                    AveragePrice = stock.AveragePrice,
                     Status = "Waiting",
                     UpdatedAt = "-"
                 };
 
                 Rows.Add(row);
-                _rowsByKey[BuildKey(stock.Symbol, exchangeCode)] = row;
+                _rowsByKey[BuildKey(stock.Symbol)] = row;
             }
         }
 
         public void UpdatePrice(KisStockSetting stock, string exchangeCode, KisPriceDetail price)
         {
-            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol, exchangeCode), out var row))
+            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol), out var row))
             {
                 return;
             }
@@ -74,13 +76,15 @@ namespace MonkeyUSStockViewer
             row.Currency = price.Currency;
             row.Base = price.Base;
             row.ChangeRate = price.ChangeRate;
+            row.HoldingQuantity = stock.HoldingQuantity;
+            row.AveragePrice = stock.AveragePrice;
             row.Status = "OK";
             row.UpdatedAt = price.ReceivedAt.ToString("HH:mm:ss");
         }
 
         public void MarkNoData(KisStockSetting stock, string exchangeCode)
         {
-            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol, exchangeCode), out var row))
+            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol), out var row))
             {
                 return;
             }
@@ -92,17 +96,22 @@ namespace MonkeyUSStockViewer
             row.Currency = string.Empty;
             row.Base = string.Empty;
             row.ChangeRate = string.Empty;
+            row.HoldingQuantity = stock.HoldingQuantity;
+            row.AveragePrice = stock.AveragePrice;
             row.Status = "NO DATA";
             row.UpdatedAt = DateTime.Now.ToString("HH:mm:ss");
         }
 
         public void MarkError(KisStockSetting stock, string exchangeCode, string message)
         {
-            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol, exchangeCode), out var row))
+            if (!_rowsByKey.TryGetValue(BuildKey(stock.Symbol), out var row))
             {
                 return;
             }
 
+            row.ExchangeCode = exchangeCode;
+            row.HoldingQuantity = stock.HoldingQuantity;
+            row.AveragePrice = stock.AveragePrice;
             row.Status = string.IsNullOrWhiteSpace(message) ? "ERR" : "ERR";
             row.UpdatedAt = DateTime.Now.ToString("HH:mm:ss");
         }
@@ -153,9 +162,9 @@ namespace MonkeyUSStockViewer
             e.Cancel = true;
         }
 
-        private static string BuildKey(string symbol, string exchangeCode)
+        private static string BuildKey(string symbol)
         {
-            return $"{symbol.Trim().ToUpperInvariant()}|{exchangeCode.Trim().ToUpperInvariant()}";
+            return symbol.Trim().ToUpperInvariant();
         }
     }
 }

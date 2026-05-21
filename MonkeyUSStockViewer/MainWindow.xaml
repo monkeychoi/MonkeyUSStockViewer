@@ -92,6 +92,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Display Name" />
@@ -101,7 +102,7 @@
                     <TextBox x:Name="StockSymbolTextBox" Grid.Row="0" Grid.Column="3" Margin="0,0,0,8" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Market" />
-                    <ComboBox x:Name="StockMarketComboBox" Grid.Row="1" Grid.Column="1" Margin="0,0,16,8" IsEditable="True">
+                    <ComboBox x:Name="StockMarketComboBox" Grid.Row="1" Grid.Column="1" Margin="0,0,16,8" IsEditable="True" SelectionChanged="StockMarketComboBox_SelectionChanged">
                         <ComboBoxItem Content="NASDAQ" />
                         <ComboBoxItem Content="NYSE" />
                         <ComboBoxItem Content="AMEX" />
@@ -109,6 +110,7 @@
 
                     <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,0,8,8" VerticalAlignment="Center" Text="Mode" />
                     <ComboBox x:Name="ExchangeModeComboBox" Grid.Row="1" Grid.Column="3" Margin="0,0,0,8" IsEditable="False">
+                        <ComboBoxItem Content="Auto" />
                         <ComboBoxItem Content="Day" />
                         <ComboBoxItem Content="Regular" />
                         <ComboBoxItem Content="Manual" />
@@ -131,7 +133,13 @@
                     <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Manual Code" />
                     <TextBox x:Name="ManualExchangeCodeTextBox" Grid.Row="3" Grid.Column="1" Margin="0,0,16,8" />
 
-                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal">
+                    <TextBlock Grid.Row="3" Grid.Column="2" Margin="0,0,8,8" VerticalAlignment="Center" Text="Qty" />
+                    <TextBox x:Name="HoldingQuantityTextBox" Grid.Row="3" Grid.Column="3" Margin="0,0,0,8" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Avg Price" />
+                    <TextBox x:Name="AveragePriceTextBox" Grid.Row="4" Grid.Column="1" Margin="0,0,16,8" />
+
+                    <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal">
                         <Button Width="90" Margin="0,0,8,0" Click="AddStockButton_Click" Content="Add" />
                         <Button Width="90" Margin="0,0,8,0" Click="UpdateStockButton_Click" Content="Update" />
                         <Button Width="90" Margin="0,0,8,0" Click="DeleteStockButton_Click" Content="Delete" />

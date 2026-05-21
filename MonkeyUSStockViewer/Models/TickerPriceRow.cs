@@ -15,6 +15,8 @@ public sealed class TickerPriceRow : INotifyPropertyChanged
     private string _changeRate = string.Empty;
     private string _status = "Waiting";
     private string _updatedAt = "-";
+    private decimal _holdingQuantity;
+    private decimal _averagePrice;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -72,6 +74,18 @@ public sealed class TickerPriceRow : INotifyPropertyChanged
         set => SetField(ref _updatedAt, value);
     }
 
+    public decimal HoldingQuantity
+    {
+        get => _holdingQuantity;
+        set => SetDecimalField(ref _holdingQuantity, value);
+    }
+
+    public decimal AveragePrice
+    {
+        get => _averagePrice;
+        set => SetDecimalField(ref _averagePrice, value);
+    }
+
     public string Title => string.IsNullOrWhiteSpace(DisplayName) ? Symbol : DisplayName;
 
     public string PriceText => string.IsNullOrWhiteSpace(Currency) ? Last : $"{Last} {Currency}";
@@ -126,6 +140,30 @@ public sealed class TickerPriceRow : INotifyPropertyChanged
         _ => "#666666"
     };
 
+    public string HoldingTooltip
+    {
+        get
+        {
+            if (HoldingQuantity <= 0 || AveragePrice <= 0)
+            {
+                return "No holding data";
+            }
+
+            if (!TryParseDecimal(Last, out var last))
+            {
+                return "Holding data\nPrice unavailable";
+            }
+
+            var cost = HoldingQuantity * AveragePrice;
+            var value = HoldingQuantity * last;
+            var profit = value - cost;
+            var rate = cost == 0 ? 0 : profit / cost * 100;
+            var currency = string.IsNullOrWhiteSpace(Currency) ? "USD" : Currency;
+
+            return $"Holding\nQty: {HoldingQuantity:0.####}\nAvg: {AveragePrice:0.00} {currency}\nValue: {value:0.00} {currency}\nP/L: {profit:+0.00;-0.00;0.00} {currency} ({rate:+0.00;-0.00;0.00}%)";
+        }
+    }
+
     public void RefreshComputed()
     {
         OnPropertyChanged(nameof(Title));
@@ -135,9 +173,22 @@ public sealed class TickerPriceRow : INotifyPropertyChanged
         OnPropertyChanged(nameof(ChangeText));
         OnPropertyChanged(nameof(ChangeBrush));
         OnPropertyChanged(nameof(StatusBrush));
+        OnPropertyChanged(nameof(HoldingTooltip));
     }
 
     private void SetField(ref string field, string value, [CallerMemberName] string? propertyName = null)
+    {
+        if (field == value)
+        {
+            return;
+        }
+
+        field = value;
+        OnPropertyChanged(propertyName);
+        RefreshComputed();
+    }
+
+    private void SetDecimalField(ref decimal field, decimal value, [CallerMemberName] string? propertyName = null)
     {
         if (field == value)
         {

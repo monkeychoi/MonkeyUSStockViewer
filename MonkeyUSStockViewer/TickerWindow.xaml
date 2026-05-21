@@ -5,19 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Stocks" Height="180" Width="280"
-        ResizeMode="CanMinimize"
+        ResizeMode="CanResize"
         Closing="Window_Closing"
         MouseDoubleClick="Window_MouseDoubleClick">
     <DockPanel Margin="8">
-        <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+        <Grid DockPanel.Dock="Top"
+              Margin="0,0,0,6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Text="US Stocks" />
-            <CheckBox x:Name="TopmostCheckBox" Grid.Column="1" Margin="0,0,8,0" VerticalAlignment="Center" Checked="TopmostCheckBox_Changed" Unchecked="TopmostCheckBox_Changed" Content="Top" />
-            <Button Grid.Column="2" Width="72" Click="SettingsButton_Click" Content="Settings" />
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Text="US Stocks" />
+            <CheckBox x:Name="TopmostCheckBox"
+                      Grid.Column="1"
+                      Margin="0,0,8,0"
+                      VerticalAlignment="Center"
+                      Checked="TopmostCheckBox_Changed"
+                      Unchecked="TopmostCheckBox_Changed"
+                      Content="Top" />
+            <Button Grid.Column="2"
+                    Width="72"
+                    Click="SettingsButton_Click"
+                    Content="Settings" />
         </Grid>
 
         <ListView x:Name="PricesListView"
@@ -33,7 +46,10 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,0,0,8">
+                    <Grid Margin="0,0,0,8"
+                          ToolTip="{Binding HoldingTooltip}"
+                          ToolTipService.InitialShowDelay="150"
+                          ToolTipService.ShowDuration="10000">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

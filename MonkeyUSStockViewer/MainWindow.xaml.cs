@@ -22,6 +22,7 @@ namespace MonkeyUSStockViewer
         private Task? _pollingTask;
         private TickerWindow? _tickerWindow;
         private bool _isClosing;
+        private bool _isLoadingStockEditor;
 
         public MainWindow()
         {
@@ -361,6 +362,16 @@ namespace MonkeyUSStockViewer
             ClearStockEditor();
         }
 
+        private void StockMarketComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoadingStockEditor)
+            {
+                return;
+            }
+
+            ApplyExchangeDefaultsForMarket(GetComboBoxText(StockMarketComboBox));
+        }
+
         private KisSettings BuildSettingsFromUi()
         {
             var firstStock = _stocks.FirstOrDefault();
@@ -455,13 +466,23 @@ namespace MonkeyUSStockViewer
 
         private void ApplyStockToEditor(KisStockSetting stock)
         {
-            StockDisplayNameTextBox.Text = stock.DisplayName;
-            StockSymbolTextBox.Text = stock.Symbol;
-            SetComboBoxText(StockMarketComboBox, stock.Market);
-            SetComboBoxText(ExchangeModeComboBox, stock.ExchangeMode);
-            SetComboBoxText(DayExchangeCodeComboBox, stock.DayExchangeCode);
-            SetComboBoxText(RegularExchangeCodeComboBox, stock.RegularExchangeCode);
-            ManualExchangeCodeTextBox.Text = stock.ManualExchangeCode;
+            _isLoadingStockEditor = true;
+            try
+            {
+                StockDisplayNameTextBox.Text = stock.DisplayName;
+                StockSymbolTextBox.Text = stock.Symbol;
+                SetComboBoxText(StockMarketComboBox, stock.Market);
+                SetComboBoxText(ExchangeModeComboBox, stock.ExchangeMode);
+                SetComboBoxText(DayExchangeCodeComboBox, stock.DayExchangeCode);
+                SetComboBoxText(RegularExchangeCodeComboBox, stock.RegularExchangeCode);
+                ManualExchangeCodeTextBox.Text = stock.ManualExchangeCode;
+                HoldingQuantityTextBox.Text = FormatDecimal(stock.HoldingQuantity);
+                AveragePriceTextBox.Text = FormatDecimal(stock.AveragePrice);
+            }
+            finally
+            {
+                _isLoadingStockEditor = false;
+            }
         }
 
         private void ClearStockEditor()
@@ -469,10 +490,10 @@ namespace MonkeyUSStockViewer
             StockDisplayNameTextBox.Text = string.Empty;
             StockSymbolTextBox.Text = string.Empty;
             SetComboBoxText(StockMarketComboBox, "NASDAQ");
-            SetComboBoxText(ExchangeModeComboBox, "Day");
-            SetComboBoxText(DayExchangeCodeComboBox, "BAQ");
-            SetComboBoxText(RegularExchangeCodeComboBox, "NAS");
-            ManualExchangeCodeTextBox.Text = "BAQ";
+            SetComboBoxText(ExchangeModeComboBox, "Auto");
+            ApplyExchangeDefaultsForMarket("NASDAQ");
+            HoldingQuantityTextBox.Text = string.Empty;
+            AveragePriceTextBox.Text = string.Empty;
         }
 
         private KisStockSetting BuildStockFromEditor()
@@ -485,7 +506,9 @@ namespace MonkeyUSStockViewer
                 ExchangeMode = GetComboBoxText(ExchangeModeComboBox).Trim(),
                 DayExchangeCode = GetComboBoxText(DayExchangeCodeComboBox).Trim().ToUpperInvariant(),
                 RegularExchangeCode = GetComboBoxText(RegularExchangeCodeComboBox).Trim().ToUpperInvariant(),
-                ManualExchangeCode = ManualExchangeCodeTextBox.Text.Trim().ToUpperInvariant()
+                ManualExchangeCode = ManualExchangeCodeTextBox.Text.Trim().ToUpperInvariant(),
+                HoldingQuantity = ParseDecimal(HoldingQuantityTextBox.Text),
+                AveragePrice = ParseDecimal(AveragePriceTextBox.Text)
             };
         }
 
@@ -528,7 +551,9 @@ namespace MonkeyUSStockViewer
                 ExchangeMode = stock.ExchangeMode,
                 DayExchangeCode = stock.DayExchangeCode,
                 RegularExchangeCode = stock.RegularExchangeCode,
-                ManualExchangeCode = stock.ManualExchangeCode
+                ManualExchangeCode = stock.ManualExchangeCode,
+                HoldingQuantity = stock.HoldingQuantity,
+                AveragePrice = stock.AveragePrice
             };
         }
 
@@ -573,6 +598,16 @@ namespace MonkeyUSStockViewer
             return double.TryParse(value, out var parsed) ? parsed : defaultValue;
         }
 
+        private static decimal ParseDecimal(string value)
+        {
+            return decimal.TryParse(value, out var parsed) && parsed > 0 ? parsed : 0;
+        }
+
+        private static string FormatDecimal(decimal value)
+        {
+            return value > 0 ? value.ToString("0.####") : string.Empty;
+        }
+
         private static string Mask(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -586,6 +621,27 @@ namespace MonkeyUSStockViewer
             }
 
             return $"{value[..4]}...{value[^4..]}";
+        }
+
+        private void ApplyExchangeDefaultsForMarket(string market)
+        {
+            var normalized = market.Trim().ToUpperInvariant();
+            var dayCode = normalized switch
+            {
+                "NYSE" => "BAY",
+                "AMEX" => "BAA",
+                _ => "BAQ"
+            };
+            var regularCode = normalized switch
+            {
+                "NYSE" => "NYS",
+                "AMEX" => "AMS",
+                _ => "NAS"
+            };
+
+            SetComboBoxText(DayExchangeCodeComboBox, dayCode);
+            SetComboBoxText(RegularExchangeCodeComboBox, regularCode);
+            ManualExchangeCodeTextBox.Text = dayCode;
         }
     }
 }
