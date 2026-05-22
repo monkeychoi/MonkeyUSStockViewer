@@ -8,6 +8,7 @@
   "PollingIntervalSeconds": 2,
   "TickerFontSize": 13,
   "AlwaysOnTop": true,
+  "CompactMode": true,
   "TickerWindowLeft": 100,
   "TickerWindowTop": 100,
   "TickerWindowWidth": 280,

@@ -26,6 +26,8 @@ public sealed class KisPriceDetail
 
     public string WonPrice { get; init; } = string.Empty;
 
+    public string WonChange { get; init; } = string.Empty;
+
     public string WonRate { get; init; } = string.Empty;
 
     public string ChangeRate { get; init; } = string.Empty;

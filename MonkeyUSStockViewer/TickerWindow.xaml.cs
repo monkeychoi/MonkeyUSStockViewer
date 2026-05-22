@@ -1,19 +1,57 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using MonkeyUSStockViewer.Models;
 
 namespace MonkeyUSStockViewer
 {
-    public partial class TickerWindow : Window
+    public partial class TickerWindow : Window, INotifyPropertyChanged
     {
         private readonly Dictionary<string, TickerPriceRow> _rowsByKey = new(StringComparer.OrdinalIgnoreCase);
         private bool _allowClose;
+        private bool _compactMode = true;
+        private double _subFontSize = 10;
 
         public event EventHandler? SettingsRequested;
 
         public event EventHandler<bool>? TopmostChanged;
 
+        public event EventHandler<bool>? CompactModeChanged;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public ObservableCollection<TickerPriceRow> Rows { get; } = new();
+
+        public bool CompactMode
+        {
+            get => _compactMode;
+            private set
+            {
+                if (_compactMode == value)
+                {
+                    return;
+                }
+
+                _compactMode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double SubFontSize
+        {
+            get => _subFontSize;
+            private set
+            {
+                if (Math.Abs(_subFontSize - value) < 0.001)
+                {
+                    return;
+                }
+
+                _subFontSize = value;
+                OnPropertyChanged();
+            }
+        }
 
         public TickerWindow(KisSettings settings)
         {
@@ -26,8 +64,9 @@ namespace MonkeyUSStockViewer
         public void ApplySettings(KisSettings settings)
         {
             Topmost = settings.AlwaysOnTop;
-            TopmostCheckBox.IsChecked = settings.AlwaysOnTop;
+            CompactMode = settings.CompactMode;
             FontSize = settings.TickerFontSize;
+            SubFontSize = Math.Max(9, settings.TickerFontSize * 0.78);
             Left = settings.TickerWindowLeft;
             Top = settings.TickerWindowTop;
             Width = settings.TickerWindowWidth;
@@ -51,6 +90,10 @@ namespace MonkeyUSStockViewer
                     Currency = string.Empty,
                     Base = string.Empty,
                     ChangeRate = string.Empty,
+                    WonPrice = string.Empty,
+                    WonChange = string.Empty,
+                    WonRate = string.Empty,
+                    ExchangeRate = string.Empty,
                     HoldingQuantity = stock.HoldingQuantity,
                     AveragePrice = stock.AveragePrice,
                     Status = "Waiting",
@@ -76,6 +119,10 @@ namespace MonkeyUSStockViewer
             row.Currency = price.Currency;
             row.Base = price.Base;
             row.ChangeRate = price.ChangeRate;
+            row.WonPrice = price.WonPrice;
+            row.WonChange = price.WonChange;
+            row.WonRate = price.WonRate;
+            row.ExchangeRate = price.ExchangeRate;
             row.HoldingQuantity = stock.HoldingQuantity;
             row.AveragePrice = stock.AveragePrice;
             row.Status = "OK";
@@ -96,6 +143,10 @@ namespace MonkeyUSStockViewer
             row.Currency = string.Empty;
             row.Base = string.Empty;
             row.ChangeRate = string.Empty;
+            row.WonPrice = string.Empty;
+            row.WonChange = string.Empty;
+            row.WonRate = string.Empty;
+            row.ExchangeRate = string.Empty;
             row.HoldingQuantity = stock.HoldingQuantity;
             row.AveragePrice = stock.AveragePrice;
             row.Status = "NO DATA";
@@ -135,15 +186,40 @@ namespace MonkeyUSStockViewer
             Close();
         }
 
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private void TickerContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            CompactModeMenuItem.IsChecked = CompactMode;
+            TopmostMenuItem.IsChecked = Topmost;
+        }
+
+        private void CompactModeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            CompactMode = CompactModeMenuItem.IsChecked;
+            CompactModeChanged?.Invoke(this, CompactMode);
+        }
+
+        private void TopmostMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Topmost = TopmostMenuItem.IsChecked;
+            TopmostChanged?.Invoke(this, Topmost);
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             SettingsRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void TopmostCheckBox_Changed(object sender, RoutedEventArgs e)
+        private void PriceListViewItem_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Topmost = TopmostCheckBox.IsChecked == true;
-            TopmostChanged?.Invoke(this, Topmost);
+            if (e.ClickCount > 1)
+            {
+                return;
+            }
+
+            if (sender is FrameworkElement { DataContext: TickerPriceRow row })
+            {
+                row.ToggleDisplayCurrency();
+            }
         }
 
         private void Window_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -165,6 +241,11 @@ namespace MonkeyUSStockViewer
         private static string BuildKey(string symbol)
         {
             return symbol.Trim().ToUpperInvariant();
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

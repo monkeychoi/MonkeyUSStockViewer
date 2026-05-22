@@ -20,6 +20,8 @@ public sealed class KisSettings
 
     public bool AlwaysOnTop { get; set; } = true;
 
+    public bool CompactMode { get; set; } = true;
+
     public double TickerWindowLeft { get; set; } = 100;
 
     public double TickerWindowTop { get; set; } = 100;

@@ -254,6 +254,7 @@ namespace MonkeyUSStockViewer
                 _tickerWindow = new TickerWindow(_settings);
                 _tickerWindow.SettingsRequested += TickerWindow_SettingsRequested;
                 _tickerWindow.TopmostChanged += TickerWindow_TopmostChanged;
+                _tickerWindow.CompactModeChanged += TickerWindow_CompactModeChanged;
             }
             else
             {
@@ -275,6 +276,15 @@ namespace MonkeyUSStockViewer
         {
             _settings.AlwaysOnTop = isTopmost;
             AlwaysOnTopCheckBox.IsChecked = isTopmost;
+            SaveTickerBounds();
+            _settingsService.Save(_settings);
+        }
+
+        private void TickerWindow_CompactModeChanged(object? sender, bool compactMode)
+        {
+            _settings.CompactMode = compactMode;
+            SaveTickerBounds();
+            _settingsService.Save(_settings);
         }
 
         private async void TickerWindow_SettingsRequested(object? sender, EventArgs e)
@@ -393,6 +403,7 @@ namespace MonkeyUSStockViewer
                 TickerWindowTop = _settings.TickerWindowTop,
                 TickerWindowWidth = _settings.TickerWindowWidth,
                 TickerWindowHeight = _settings.TickerWindowHeight,
+                CompactMode = _settings.CompactMode,
                 Stocks = _stocks.Select(CloneStock).ToList()
             };
         }

@@ -4,73 +4,108 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Stocks" Height="180" Width="280"
+        Title="US Stocks" Height="180" Width="280"
         ResizeMode="CanResize"
         Closing="Window_Closing"
         MouseDoubleClick="Window_MouseDoubleClick">
-    <DockPanel Margin="8">
-        <Grid DockPanel.Dock="Top"
-              Margin="0,0,0,6">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold"
-                       Text="US Stocks" />
-            <CheckBox x:Name="TopmostCheckBox"
-                      Grid.Column="1"
-                      Margin="0,0,8,0"
-                      VerticalAlignment="Center"
-                      Checked="TopmostCheckBox_Changed"
-                      Unchecked="TopmostCheckBox_Changed"
-                      Content="Top" />
-            <Button Grid.Column="2"
-                    Width="72"
-                    Click="SettingsButton_Click"
-                    Content="Settings" />
-        </Grid>
-
+    <Grid Margin="4">
         <ListView x:Name="PricesListView"
                   BorderThickness="0"
+                  Background="Transparent"
                   ItemsSource="{Binding Rows}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ContextMenu>
+                <ContextMenu Opened="TickerContextMenu_Opened">
+                    <MenuItem x:Name="CompactModeMenuItem"
+                              Header="Compact Mode"
+                              IsCheckable="True"
+                              Click="CompactModeMenuItem_Click" />
+                    <MenuItem x:Name="TopmostMenuItem"
+                              Header="Always On Top"
+                              IsCheckable="True"
+                              Click="TopmostMenuItem_Click" />
+                    <Separator />
+                    <MenuItem Header="Settings"
+                              Click="SettingsMenuItem_Click" />
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <EventSetter Event="MouseLeftButtonUp" Handler="PriceListViewItem_MouseLeftButtonUp" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,0,0,8"
-                          ToolTip="{Binding HoldingTooltip}"
+                    <Grid ToolTip="{Binding HoldingTooltip}"
                           ToolTipService.InitialShowDelay="150"
                           ToolTipService.ShowDuration="10000">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Text="{Binding Title}" />
-                        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" FontWeight="SemiBold" Text="{Binding PriceText}" />
+                        <Grid x:Name="CompactGrid"
+                              Grid.Row="0"
+                              Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MinWidth="44" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="10" Foreground="#666666" Text="{Binding SymbolText}" />
-                        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Foreground="{Binding ChangeBrush}" Text="{Binding ChangeText}" />
+                            <TextBlock Grid.Column="0"
+                                       Margin="0,0,8,0"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Symbol}" />
+                            <TextBlock Grid.Column="1"
+                                       Margin="0,0,10,0"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding CompactPriceText}" />
+                            <TextBlock Grid.Column="2"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Foreground="{Binding CompactBrush}"
+                                       Text="{Binding CompactChangeText}" />
+                        </Grid>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="10" Foreground="#666666" Text="{Binding UpdatedAt}" />
-                        <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" FontSize="10" Foreground="{Binding StatusBrush}" Text="{Binding Status}" />
+                        <Grid x:Name="DetailGrid"
+                              Grid.Row="1"
+                              Margin="0,0,0,8"
+                              Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Text="{Binding Title}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" FontWeight="SemiBold" Text="{Binding PriceText}" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="{Binding DataContext.SubFontSize, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="#666666" Text="{Binding SymbolText}" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" FontSize="{Binding DataContext.SubFontSize, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{Binding ChangeBrush}" Text="{Binding ChangeText}" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" FontSize="{Binding DataContext.SubFontSize, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="#666666" Text="{Binding UpdatedAt}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" FontSize="{Binding DataContext.SubFontSize, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{Binding StatusBrush}" Text="{Binding Status}" />
+                        </Grid>
                     </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.CompactMode, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                            <Setter TargetName="CompactGrid" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="DetailGrid" Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-    </DockPanel>
+    </Grid>
 </Window>

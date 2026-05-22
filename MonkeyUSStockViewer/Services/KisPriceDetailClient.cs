@@ -81,6 +81,7 @@ public sealed class KisPriceDetailClient
             Volume = GetString(output, "tvol"),
             Amount = GetString(output, "tamt"),
             WonPrice = GetString(output, "t_xprc"),
+            WonChange = GetString(output, "t_xdif"),
             WonRate = GetString(output, "t_xrat"),
             ChangeRate = GetString(output, "t_xrat"),
             ExchangeRate = GetString(output, "t_rate"),
