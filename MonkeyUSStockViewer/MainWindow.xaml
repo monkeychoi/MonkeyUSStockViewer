@@ -154,6 +154,7 @@
             <Button x:Name="StartPollingButton" Width="120" Margin="0,0,8,0" Click="StartPollingButton_Click" Content="Start Polling" />
             <Button x:Name="StopPollingButton" Width="110" Margin="0,0,16,0" Click="StopPollingButton_Click" Content="Stop" IsEnabled="False" />
             <CheckBox x:Name="LogRawJsonCheckBox" Margin="0,0,16,0" VerticalAlignment="Center" Content="Log raw JSON" />
+            <Button Width="90" Margin="0,0,16,0" Click="ClearLogButton_Click" Content="Clear Log" />
             <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" Text="Token" />
             <TextBox x:Name="AccessTokenTextBox" Width="320" IsReadOnly="True" />
         </StackPanel>

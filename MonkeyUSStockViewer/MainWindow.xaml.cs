@@ -372,6 +372,12 @@ namespace MonkeyUSStockViewer
             ClearStockEditor();
         }
 
+        private void ClearLogButton_Click(object sender, RoutedEventArgs e)
+        {
+            _logLines.Clear();
+            RawLogTextBox.Clear();
+        }
+
         private void StockMarketComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_isLoadingStockEditor)
