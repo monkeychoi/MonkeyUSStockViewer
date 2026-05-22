@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using MonkeyUSStockViewer.Models;
@@ -222,9 +223,15 @@ namespace MonkeyUSStockViewer
             }
         }
 
-        private void Window_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void PriceListViewItem_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            SettingsRequested?.Invoke(this, EventArgs.Empty);
+            if (sender is FrameworkElement { DataContext: TickerPriceRow row }
+                && !string.IsNullOrWhiteSpace(row.Symbol))
+            {
+                row.ToggleDisplayCurrency();
+                OpenExternalQuote(row.Symbol);
+                e.Handled = true;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -241,6 +248,23 @@ namespace MonkeyUSStockViewer
         private static string BuildKey(string symbol)
         {
             return symbol.Trim().ToUpperInvariant();
+        }
+
+        private void OpenExternalQuote(string symbol)
+        {
+            var quoteUrl = $"https://finance.yahoo.com/quote/{Uri.EscapeDataString(symbol.Trim().ToUpperInvariant())}";
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = quoteUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Open quote failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

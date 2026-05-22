@@ -6,8 +6,7 @@
         mc:Ignorable="d"
         Title="US Stocks" Height="180" Width="280"
         ResizeMode="CanResize"
-        Closing="Window_Closing"
-        MouseDoubleClick="Window_MouseDoubleClick">
+        Closing="Window_Closing">
     <Grid Margin="4">
         <ListView x:Name="PricesListView"
                   BorderThickness="0"
@@ -35,6 +34,7 @@
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <EventSetter Event="MouseLeftButtonUp" Handler="PriceListViewItem_MouseLeftButtonUp" />
+                    <EventSetter Event="MouseDoubleClick" Handler="PriceListViewItem_MouseDoubleClick" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
